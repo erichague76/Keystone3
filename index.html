@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#14377D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Keystone</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <h1>Keystone</h1>
+      <p class="hero-subtitle">Find words that contain the 3 plate letters in order.</p>
+    </header>
+
+    <main class="layout">
+      <section class="card plate-card" aria-label="License plate preview">
+        <div class="plate-stage">
+          <img
+            id="platePreview"
+            class="plate-preview"
+            alt="Pennsylvania-style plate preview"
+            hidden
+          />
+          <p id="plateFallback" class="muted">Plate image preview will appear here.</p>
+        </div>
+        <p id="currentLetters" class="mono current-letters">Current letters: ---</p>
+      </section>
+
+      <section class="controls-grid">
+        <section class="card">
+          <label class="field-label" for="wordInput">Words you formed / input:</label>
+          <div class="row input-row">
+            <input id="wordInput" class="text-input mono" type="text" maxlength="32" autocomplete="off" />
+            <button id="submitBtn" class="btn btn-primary" type="button">Submit</button>
+            <button id="answerBtn" class="btn btn-primary" type="button">Answer</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="row wrap gap-sm">
+            <button id="generateBtn" class="btn btn-secondary" type="button">Generate Random Plate Letters</button>
+            <button id="clearBtn" class="btn btn-secondary" type="button">Clear</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <label class="field-label" for="lookupInput">3-Letter Plate Lookup:</label>
+          <div class="row wrap gap-sm">
+            <input id="lookupInput" class="text-input mono small-input" type="text" maxlength="3" autocomplete="off" />
+            <button id="lookupBtn" class="btn btn-primary" type="button">Check / Load Plate</button>
+          </div>
+          <p id="lookupResult" class="inline-status">Enter 3 letters to check whether words can be formed.</p>
+        </section>
+      </section>
+
+      <section class="card status-card">
+        <p id="summary" class="summary">Ready.</p>
+        <p id="status" class="status muted">Loading resources…</p>
+      </section>
+
+      <section class="results-layout">
+        <section class="card column-card">
+          <h2>Correct Submitted Words</h2>
+          <ul id="submittedList" class="scroll-area submitted-list mono" aria-live="polite"></ul>
+        </section>
+
+        <section class="card column-card wide">
+          <h2>Answer List</h2>
+          <div id="resultsMeta" class="results-meta muted"></div>
+          <div id="answerGrid" class="scroll-area answer-grid mono" aria-live="polite"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <noscript>This app requires JavaScript to run.</noscript>
+  <script src="app.js" defer></script>
+</body>
+</html>
