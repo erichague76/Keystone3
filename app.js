@@ -1,5 +1,5 @@
 const WORDLIST_FILE = './SpellFinder.txt';
-const PLATE_IMAGE_FILE = './Plate.png';
+const PLATE_IMAGE_FILE = './plate.png';
 
 const CONFIG = {
   plateTextColor: '#14377D',
@@ -52,7 +52,8 @@ async function loadWords() {
     const text = await response.text();
     const cleaned = [...new Set(
       text
-        .split(/?
+        .split(/
+?
 /)
         .map(normalizeWord)
         .filter(Boolean)
