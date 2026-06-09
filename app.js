@@ -42,19 +42,21 @@ function orderedMatch(word, letters) {
 
 function generateRandomLetters() {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return Array.from({ length: 3 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+  return Array.from({ length: 3 }, () =>
+    alphabet[Math.floor(Math.random() * alphabet.length)]
+  ).join('');
 }
 
 async function loadWords() {
   try {
     const response = await fetch(WORDLIST_FILE, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
     const text = await response.text();
+
     const cleaned = [...new Set(
       text
-        .split(/
-?
-/)
+        .split(/\r?\n/)
         .map(normalizeWord)
         .filter(Boolean)
     )].sort();
@@ -73,14 +75,17 @@ async function loadWords() {
 function loadPlateImage() {
   return new Promise((resolve) => {
     const img = new Image();
+
     img.onload = () => {
       state.plateImage = img;
       resolve(img);
     };
+
     img.onerror = () => {
       state.plateImage = null;
       resolve(null);
     };
+
     img.src = PLATE_IMAGE_FILE;
   });
 }
@@ -106,101 +111,32 @@ function getPossibleWordsForLetters(letters) {
   if (cleaned.length !== 3) return [];
   return state.words.filter((word) => orderedMatch(word, cleaned));
 }
-function buildPlateDataUrl(letters) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Match plate image size
-    canvas.width = state.plateImage.width;
-    canvas.height = state.plateImage.height;
-
-    // Draw base plate
-    ctx.drawImage(state.plateImage, 0, 0);
-
-    // Draw letters
-    ctx.fillStyle = CONFIG.plateTextColor;
-    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
-    ctx.textBaseline = "middle";
-
-    const chars = letters.toUpperCase().split("");
-
-    let x = CONFIG.manualOffsetX;
-    let y = canvas.height / 2 + CONFIG.manualOffsetY;
-
-    for (const ch of chars) {
-        ctx.fillText(ch, x, y);
-        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
-    }
-
-    return canvas.toDataURL("image/png");
-
-}
-
-function renderAnswerGrid(possibleWords, validSubmitted) {
-  clearAnswerGrid();
-
-  els.resultsMeta.textContent = `Total possible words: ${possibleWords.length} • Correct submitted words highlighted: ${validSubmitted.size}`;
-
-  for (const word of possibleWords) {
-    const div = document.createElement('div');
-    div.className = 'answer-item';
-    if (validSubmitted.has(word)) div.classList.add('highlight');
-    div.textContent = word;
-    els.answerGrid.appendChild(div);
-  }
-}
 
 function buildPlateDataUrl(letters) {
   if (!state.plateImage) return null;
 
-  const img = state.plateImage;
   const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
   const ctx = canvas.getContext('2d');
 
-  ctx.drawImage(img, 0, 0);
+  canvas.width = state.plateImage.width;
+  canvas.height = state.plateImage.height;
+
+  ctx.drawImage(state.plateImage, 0, 0);
+
   ctx.fillStyle = CONFIG.plateTextColor;
-  ctx.textBaseline = 'top';
-  ctx.font = `700 ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+  ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+  ctx.textBaseline = 'middle';
 
-  let cursorX = CONFIG.manualOffsetX;
-  const y = CONFIG.manualOffsetY;
+  const chars = letters.toUpperCase().split('');
+  let x = CONFIG.manualOffsetX;
+  const y = canvas.height / 2 + CONFIG.manualOffsetY;
 
-  for (const ch of letters) {
-    ctx.fillText(ch, cursorX, y);
-    cursorX += ctx.measureText(ch).width + CONFIG.manualLetterSpacingPx;
+  for (const ch of chars) {
+    ctx.fillText(ch, x, y);
+    x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
   }
 
   return canvas.toDataURL('image/png');
-}
-function buildPlateDataUrl(letters) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Match plate image size
-    canvas.width = state.plateImage.width;
-    canvas.height = state.plateImage.height;
-
-    // Draw base plate
-    ctx.drawImage(state.plateImage, 0, 0);
-
-    // Draw letters
-    ctx.fillStyle = CONFIG.plateTextColor;
-    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
-    ctx.textBaseline = "middle";
-
-    const chars = letters.toUpperCase().split("");
-
-    let x = CONFIG.manualOffsetX;
-    let y = canvas.height / 2 + CONFIG.manualOffsetY;
-
-    for (const ch of chars) {
-        ctx.fillText(ch, x, y);
-        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
-    }
-
-    return canvas.toDataURL("image/png");
 }
 
 function renderPlateWithLetters(letters) {
@@ -213,17 +149,72 @@ function renderPlateWithLetters(letters) {
   }
 
   const dataUrl = buildPlateDataUrl(letters);
+  if (!dataUrl) {
+    els.platePreview.hidden = true;
+    els.plateFallback.hidden = false;
+    els.plateFallback.textContent = 'Could not render plate.';
+    return;
+  }
+
   els.platePreview.src = dataUrl;
   els.platePreview.hidden = false;
   els.plateFallback.hidden = true;
   els.currentLetters.textContent = `Current letters: ${letters}`;
 }
 
+function refreshSubmittedList() {
+  els.submittedList.innerHTML = '';
+
+  if (state.submittedWords.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = 'No correct submitted words yet.';
+    els.submittedList.appendChild(li);
+    return;
+  }
+
+  for (const word of state.submittedWords) {
+    const li = document.createElement('li');
+    li.textContent = word;
+    els.submittedList.appendChild(li);
+  }
+}
+
+function clearAnswerGrid() {
+  els.answerGrid.innerHTML = '';
+  els.resultsMeta.textContent = '';
+}
+
+function renderAnswerGrid(possibleWords, validSubmitted) {
+  clearAnswerGrid();
+
+  els.resultsMeta.textContent =
+    `Total possible words: ${possibleWords.length} • Correct submitted words highlighted: ${validSubmitted.size}`;
+
+  for (const word of possibleWords) {
+    const div = document.createElement('div');
+    div.className = 'answer-item';
+
+    if (validSubmitted.has(word)) {
+      div.classList.add('highlight');
+    }
+
+    div.textContent = word;
+    els.answerGrid.appendChild(div);
+  }
+}
+
 function loadPlateLetters(letters, source = 'custom') {
   const cleaned = normalizeWord(letters).toUpperCase();
+
+  if (cleaned.length !== 3) {
+    setSummary('Plate letters must be exactly 3 letters.');
+    return;
+  }
+
   state.currentLetters = cleaned;
   state.submittedWords = [];
   state.possibleWords = getPossibleWordsForLetters(cleaned);
+
   els.wordInput.value = '';
   clearAnswerGrid();
   refreshSubmittedList();
@@ -240,7 +231,8 @@ function loadPlateLetters(letters, source = 'custom') {
 
 function generateLettersAndPlate() {
   const letters = generateRandomLetters();
-  els.lookupResult.textContent = 'Random plate generated. Use 3-Letter Plate Lookup below to check/load a custom plate.';
+  els.lookupResult.textContent =
+    'Random plate generated. Use 3-Letter Plate Lookup below to check/load a custom plate.';
   loadPlateLetters(letters, 'random');
 }
 
@@ -256,11 +248,14 @@ function lookupPlate() {
   const possibleWords = getPossibleWordsForLetters(letters);
 
   if (possibleWords.length > 0) {
-    els.lookupResult.textContent = `${letters}: YES — words can be formed (${possibleWords.length} possible words). Plate loaded.`;
+    els.lookupResult.textContent =
+      `${letters}: YES — words can be formed (${possibleWords.length} possible words). Plate loaded.`;
     loadPlateLetters(letters, 'lookup');
   } else {
     els.lookupResult.textContent = `${letters}: NO — no words can be formed.`;
-    setSummary(`Lookup checked "${letters}". No possible words were found, so the current plate was not changed.`);
+    setSummary(
+      `Lookup checked "${letters}". No possible words were found, so the current plate was not changed.`
+    );
   }
 }
 
@@ -287,7 +282,9 @@ function submitWord() {
   }
 
   if (!possibleWords.includes(userWord)) {
-    setSummary(`"${userWord}" is NOT a valid answer for plate letters "${letters.toUpperCase()}".`);
+    setSummary(
+      `"${userWord}" is NOT a valid answer for plate letters "${letters.toUpperCase()}".`
+    );
     els.wordInput.value = '';
     els.wordInput.focus();
     return;
@@ -301,7 +298,8 @@ function submitWord() {
 
   const userLength = userWord.length;
   const shorterWords = possibleWords.filter((word) => word.length < userLength);
-  const percentageShorter = possibleWords.length === 0 ? 0 : (shorterWords.length / possibleWords.length) * 100;
+  const percentageShorter =
+    possibleWords.length === 0 ? 0 : (shorterWords.length / possibleWords.length) * 100;
 
   setSummary(
     `"${userWord}" added to Correct Submitted Words. It is longer than ${percentageShorter.toFixed(2)}% of the ${possibleWords.length} possible words.`
@@ -327,9 +325,15 @@ function showAnswers() {
     return;
   }
 
-  const validSubmitted = new Set(state.submittedWords.filter((word) => possibleWords.includes(word)));
+  const validSubmitted = new Set(
+    state.submittedWords.filter((word) => possibleWords.includes(word))
+  );
+
   renderAnswerGrid(possibleWords, validSubmitted);
-  setSummary(`Showing all ${possibleWords.length} possible words in 4-column responsive layout. ${validSubmitted.size} correct submitted words highlighted.`);
+
+  setSummary(
+    `Showing all ${possibleWords.length} possible words in 4-column responsive layout. ${validSubmitted.size} correct submitted words highlighted.`
+  );
 }
 
 function clearAll() {
@@ -342,6 +346,7 @@ function clearAll() {
   state.submittedWords = [];
   state.possibleWords = [];
   state.currentLetters = '';
+
   refreshSubmittedList();
 
   els.platePreview.hidden = true;
@@ -349,82 +354,8 @@ function clearAll() {
   els.plateFallback.hidden = false;
   els.plateFallback.textContent = 'Plate image preview will appear here.';
   els.currentLetters.textContent = 'Current letters: ---';
+
   els.wordInput.focus();
-}
-function buildPlateDataUrl(letters) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Match plate image size
-    canvas.width = state.plateImage.width;
-    canvas.height = state.plateImage.height;
-
-    // Draw base plate
-    ctx.drawImage(state.plateImage, 0, 0);
-
-    // Draw letters
-    ctx.fillStyle = CONFIG.plateTextColor;
-    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
-    ctx.textBaseline = "middle";
-
-    const chars = letters.toUpperCase().split("");
-
-    let x = CONFIG.manualOffsetX;
-    let y = canvas.height / 2 + CONFIG.manualOffsetY;
-
-    for (const ch of chars) {
-        ctx.fillText(ch, x, y);
-        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
-    }
-
-    return canvas.toDataURL("image/png");
-}
-
-function renderPlateWithLetters(letters) {
-    if (!state.plateImage) return;
-
-    const url = buildPlateDataUrl(letters);
-
-    els.platePreview.src = url;
-    els.platePreview.hidden = false;
-
-    els.plateFallback.hidden = true;
-    els.currentLetters.textContent = `Current letters: ${letters}`;
-}
-
-function loadPlateLetters() {
-    const letters = generateRandomLetters();
-    state.currentLetters = letters;
-    return letters;
-}
-
-function generateLettersAndPlate() {
-    const letters = loadPlateLetters();
-    renderPlateWithLetters(letters);
-
-    const possible = getPossibleWordsForLetters(letters);
-    state.possibleWords = possible;
-
-    clearAnswerGrid();
-}
-
-function lookupPlate() {
-    const letters = els.lookupInput.value.trim().toUpperCase();
-    if (letters.length !== 3) {
-        els.lookupResult.textContent = "Enter 3 letters.";
-        return;
-    }
-
-    state.currentLetters = letters;
-    renderPlateWithLetters(letters);
-
-    const possible = getPossibleWordsForLetters(letters);
-    state.possibleWords = possible;
-
-    els.lookupResult.textContent =
-        possible.length === 0
-            ? "No matching words."
-            : `${possible.length} possible words.`;
 }
 
 function bindEvents() {
@@ -439,7 +370,10 @@ function bindEvents() {
   });
 
   els.lookupInput.addEventListener('input', () => {
-    els.lookupInput.value = els.lookupInput.value.replace(/[^a-z]/gi, '').slice(0, 3).toUpperCase();
+    els.lookupInput.value = els.lookupInput.value
+      .replace(/[^a-z]/gi, '')
+      .slice(0, 3)
+      .toUpperCase();
   });
 
   els.lookupInput.addEventListener('keydown', (event) => {
@@ -479,9 +413,9 @@ async function init() {
 
   if (!state.plateImage) {
     if (!state.wordListLoaded) {
-      setSummary('Place both SpellFinder.txt and Plate.png next to these files before publishing to GitHub Pages.');
+      setSummary('Place both SpellFinder.txt and plate.png next to these files before publishing to GitHub Pages.');
     } else {
-      setSummary('Place Plate.png next to these files before publishing to GitHub Pages.');
+      setSummary('Place plate.png next to these files before publishing to GitHub Pages.');
     }
   }
 
