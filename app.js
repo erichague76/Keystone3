@@ -3,10 +3,10 @@ const PLATE_IMAGE_FILE = './plate.png';
 
 const CONFIG = {
   plateTextColor: '#14377D',
-  manualFontSize: 150,
-  manualLetterSpacingPx: -15,
+  manualFontSize: 120,
+  manualLetterSpacingPx: 10,
   manualOffsetX: 20,
-  manualOffsetY: 50,
+  manualOffsetY: -20,
   fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif',
   previewMaxWidthPx: 560,
 };
