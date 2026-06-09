@@ -106,28 +106,6 @@ function getPossibleWordsForLetters(letters) {
   if (cleaned.length !== 3) return [];
   return state.words.filter((word) => orderedMatch(word, cleaned));
 }
-
-function refreshSubmittedList() {
-  els.submittedList.innerHTML = '';
-  if (state.submittedWords.length === 0) {
-    const li = document.createElement('li');
-    li.className = 'muted';
-    li.textContent = 'No submitted words yet.';
-    els.submittedList.appendChild(li);
-    return;
-  }
-
-  for (const word of state.submittedWords) {
-    const li = document.createElement('li');
-    li.textContent = word;
-    els.submittedList.appendChild(li);
-  }
-}
-
-function clearAnswerGrid() {
-  els.resultsMeta.textContent = '';
-  els.answerGrid.innerHTML = '';
-}
 function buildPlateDataUrl(letters) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -155,6 +133,7 @@ function buildPlateDataUrl(letters) {
     }
 
     return canvas.toDataURL("image/png");
+
 }
 
 function renderAnswerGrid(possibleWords, validSubmitted) {
