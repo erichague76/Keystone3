@@ -128,6 +128,34 @@ function clearAnswerGrid() {
   els.resultsMeta.textContent = '';
   els.answerGrid.innerHTML = '';
 }
+function buildPlateDataUrl(letters) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Match plate image size
+    canvas.width = state.plateImage.width;
+    canvas.height = state.plateImage.height;
+
+    // Draw base plate
+    ctx.drawImage(state.plateImage, 0, 0);
+
+    // Draw letters
+    ctx.fillStyle = CONFIG.plateTextColor;
+    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+    ctx.textBaseline = "middle";
+
+    const chars = letters.toUpperCase().split("");
+
+    let x = CONFIG.manualOffsetX;
+    let y = canvas.height / 2 + CONFIG.manualOffsetY;
+
+    for (const ch of chars) {
+        ctx.fillText(ch, x, y);
+        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
+    }
+
+    return canvas.toDataURL("image/png");
+}
 
 function renderAnswerGrid(possibleWords, validSubmitted) {
   clearAnswerGrid();
@@ -166,6 +194,34 @@ function buildPlateDataUrl(letters) {
   }
 
   return canvas.toDataURL('image/png');
+}
+function buildPlateDataUrl(letters) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Match plate image size
+    canvas.width = state.plateImage.width;
+    canvas.height = state.plateImage.height;
+
+    // Draw base plate
+    ctx.drawImage(state.plateImage, 0, 0);
+
+    // Draw letters
+    ctx.fillStyle = CONFIG.plateTextColor;
+    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+    ctx.textBaseline = "middle";
+
+    const chars = letters.toUpperCase().split("");
+
+    let x = CONFIG.manualOffsetX;
+    let y = canvas.height / 2 + CONFIG.manualOffsetY;
+
+    for (const ch of chars) {
+        ctx.fillText(ch, x, y);
+        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
+    }
+
+    return canvas.toDataURL("image/png");
 }
 
 function renderPlateWithLetters(letters) {
@@ -315,6 +371,81 @@ function clearAll() {
   els.plateFallback.textContent = 'Plate image preview will appear here.';
   els.currentLetters.textContent = 'Current letters: ---';
   els.wordInput.focus();
+}
+function buildPlateDataUrl(letters) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Match plate image size
+    canvas.width = state.plateImage.width;
+    canvas.height = state.plateImage.height;
+
+    // Draw base plate
+    ctx.drawImage(state.plateImage, 0, 0);
+
+    // Draw letters
+    ctx.fillStyle = CONFIG.plateTextColor;
+    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+    ctx.textBaseline = "middle";
+
+    const chars = letters.toUpperCase().split("");
+
+    let x = CONFIG.manualOffsetX;
+    let y = canvas.height / 2 + CONFIG.manualOffsetY;
+
+    for (const ch of chars) {
+        ctx.fillText(ch, x, y);
+        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
+    }
+
+    return canvas.toDataURL("image/png");
+}
+
+function renderPlateWithLetters(letters) {
+    if (!state.plateImage) return;
+
+    const url = buildPlateDataUrl(letters);
+
+    els.platePreview.src = url;
+    els.platePreview.hidden = false;
+
+    els.plateFallback.hidden = true;
+    els.currentLetters.textContent = `Current letters: ${letters}`;
+}
+
+function loadPlateLetters() {
+    const letters = generateRandomLetters();
+    state.currentLetters = letters;
+    return letters;
+}
+
+function generateLettersAndPlate() {
+    const letters = loadPlateLetters();
+    renderPlateWithLetters(letters);
+
+    const possible = getPossibleWordsForLetters(letters);
+    state.possibleWords = possible;
+
+    clearAnswerGrid();
+}
+
+function lookupPlate() {
+    const letters = els.lookupInput.value.trim().toUpperCase();
+    if (letters.length !== 3) {
+        els.lookupResult.textContent = "Enter 3 letters.";
+        return;
+    }
+
+    state.currentLetters = letters;
+    renderPlateWithLetters(letters);
+
+    const possible = getPossibleWordsForLetters(letters);
+    state.possibleWords = possible;
+
+    els.lookupResult.textContent =
+        possible.length === 0
+            ? "No matching words."
+            : `${possible.length} possible words.`;
 }
 
 function bindEvents() {
