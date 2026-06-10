@@ -176,6 +176,10 @@ function renderPlateWithLetters(letters) {
   els.currentLetters.textContent = `Current letters: ${letters}`;
 }
 
+function displayPlateLettersLeft(letters) {
+  els.plateLettersDisplay.textContent = letters;
+}
+
 function refreshSubmittedList() {
   els.submittedList.innerHTML = '';
 
@@ -233,6 +237,7 @@ function loadPlateLetters(letters, source = 'custom') {
   clearAnswerGrid();
   refreshSubmittedList();
   renderPlateWithLetters(cleaned);
+  displayPlateLettersLeft(cleaned);
 
   if (source === 'random') {
     setSummary(`Generated random plate letters: ${cleaned}`);
@@ -368,6 +373,7 @@ function clearAll() {
   els.plateFallback.hidden = false;
   els.plateFallback.textContent = 'Plate image preview will appear here.';
   els.currentLetters.textContent = 'Current letters: ---';
+  els.plateLettersDisplay.textContent = '---';
 
   els.wordInput.focus();
 }
@@ -400,6 +406,7 @@ async function init() {
     platePreview: $('platePreview'),
     plateFallback: $('plateFallback'),
     currentLetters: $('currentLetters'),
+    plateLettersDisplay: $('plateLettersDisplay'),
     wordInput: $('wordInput'),
     submitBtn: $('submitBtn'),
     answerBtn: $('answerBtn'),
