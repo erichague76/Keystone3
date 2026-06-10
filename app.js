@@ -3,8 +3,8 @@ const PLATE_IMAGE_FILE = './Plate.png';
 
 const CONFIG = {
   plateTextColor: '#14377D',
-  manualFontSize:100,
-  manualLetterSpacingPx: 80,
+  manualFontSize:80,
+  manualLetterSpacingPx: -10,
   manualOffsetX: 10,
   manualOffsetY: 80,
   fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif',
