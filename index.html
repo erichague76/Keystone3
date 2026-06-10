@@ -18,19 +18,24 @@
     </header>
 
     <main class="layout">
-      <section class="card plate-card" aria-label="License plate preview">
-        <div class="plate-stage">
-          <canvas id="plateCanvas" width="560" height="300"></canvas>
-          <p id="plateFallback" class="muted">Plate image preview will appear here.</p>
+      <section class="plate-wrapper">
+        <div class="plate-prefix">
+          <div id="plateLettersDisplay" class="plate-letters">---</div>
         </div>
-        <p id="currentLetters" class="mono current-letters"></p>
+        <section class="card plate-card" aria-label="License plate preview">
+          <div class="plate-stage">
+            <canvas id="plateCanvas" width="560" height="300"></canvas>
+            <p id="plateFallback" class="muted">Plate image preview will appear here.</p>
+          </div>
+          <p id="currentLetters" class="mono current-letters"></p>
+        </section>
       </section>
 
       <section class="controls-grid">
         <section class="card">
           <label class="field-label" for="wordInput">Words you formed / input:</label>
           <div class="row input-row">
-            <input id="wordInput" class="text-input mono" type="text" maxlength="32" autocomplete="off" />
+            <input id="wordInput" class="text-input mono" type="text" maxlength="32" autocomplete="off" placeholder="Enter word" />
             <button id="submitBtn" class="btn btn-primary" type="button">Submit</button>
             <button id="answerBtn" class="btn btn-primary" type="button">Answer</button>
           </div>
