@@ -113,30 +113,38 @@ function getPossibleWordsForLetters(letters) {
 }
 
 function buildPlateDataUrl(letters) {
-  if (!state.plateImage) return null;
+    const canvas = els.plateCanvas;
+    const ctx = canvas.getContext('2d');
 
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+    // Clear previous drawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  canvas.width = state.plateImage.width;
-  canvas.height = state.plateImage.height;
+    // Draw the base plate image
+    ctx.drawImage(state.plateImage, 0, 0, canvas.width, canvas.height);
 
-  ctx.drawImage(state.plateImage, 0, 0);
+    // Prepare text settings
+    ctx.fillStyle = CONFIG.plateTextColor;
+    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
+    ctx.textBaseline = 'middle';
 
-  ctx.fillStyle = CONFIG.plateTextColor;
-  ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
-  ctx.textBaseline = 'middle';
+    const chars = letters.toUpperCase().split('');
 
-  const chars = letters.toUpperCase().split('');
-  let x = CONFIG.manualOffsetX;
-  const y = canvas.height / 2 + CONFIG.manualOffsetY;
+    // Starting X and Y positions
+    let x = CONFIG.manualOffsetX;
+    const y = canvas.height / 2 + CONFIG.manualOffsetY;
 
-  for (const ch of chars) {
-    ctx.fillText(ch, x, y);
-    x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
-  }
+    // Draw each character with spacing
+    for (const ch of chars) {
+        ctx.fillText(ch, x, y);
+        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
+    }
 
-  return canvas.toDataURL('image/png');
+    // Update UI text
+    els.currentLetters.textContent = `Current letters: ${letters}`;
+    els.wordInput.focus();
+
+    // Return PNG data URL
+    return canvas.toDataURL("image/png");
 }
 
 function renderPlateWithLetters(letters) {
