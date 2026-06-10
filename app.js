@@ -112,40 +112,7 @@ function getPossibleWordsForLetters(letters) {
   return state.words.filter((word) => orderedMatch(word, cleaned));
 }
 
-function buildPlateDataUrl(letters) {
-    const canvas = els.plateCanvas;
-    const ctx = canvas.getContext('2d');
-
-    // Clear previous drawing
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the base plate image
-    ctx.drawImage(state.plateImage, 0, 0, canvas.width, canvas.height);
-
-    // Prepare text settings
-    ctx.fillStyle = CONFIG.plateTextColor;
-    ctx.font = `bold ${CONFIG.manualFontSize}px ${CONFIG.fontFamily}`;
-    ctx.textBaseline = 'middle';
-
-    const chars = letters.toUpperCase().split('');
-
-    // Starting X and Y positions
-    let x = CONFIG.manualOffsetX;
-    const y = canvas.height / 2 + CONFIG.manualOffsetY;
-
-    // Draw each character with spacing
-    for (const ch of chars) {
-        ctx.fillText(ch, x, y);
-        x += CONFIG.manualFontSize + CONFIG.manualLetterSpacingPx;
-    }
-
-    // Update UI text
-    els.currentLetters.textContent = `Current letters: ${letters}`;
-    els.wordInput.focus();
-
-    // Return PNG data URL
-    return canvas.toDataURL("image/png");
-}
+const canvas = document.getElementById('plateCanvas');
 
 function renderPlateWithLetters(letters) {
   if (!state.plateImage) {
