@@ -157,10 +157,17 @@ function renderPlateWithLetters(letters) {
   }
 
   const canvas = document.getElementById('plateCanvas');
+  if (!canvas) {
+    els.plateFallback.hidden = false;
+    els.platePreview.hidden = true;
+    setSummary('Canvas element not found.');
+    return;
+  }
+
   const ctx = canvas.getContext('2d');
   const img = new Image();
   img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   };
   img.src = dataUrl;
 
