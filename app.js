@@ -5,7 +5,7 @@ const CONFIG = {
   plateTextColor: '#14377D',
   manualFontSize:1o0,
   manualLetterSpacingPx: 80,
-  manualOffsetX: 20,
+  manualOffsetX: 10,
   manualOffsetY: 80,
   fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif',
   previewMaxWidthPx: 560,
