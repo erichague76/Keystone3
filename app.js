@@ -6,7 +6,7 @@ const CONFIG = {
   manualFontSize: 70,
   manualLetterSpacingPx: 0,
   manualOffsetX: 20,
-  manualOffsetY: -20,
+  manualOffsetY: -50,
   fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif',
   previewMaxWidthPx: 560,
 };
