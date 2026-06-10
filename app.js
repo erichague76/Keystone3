@@ -156,8 +156,21 @@ function renderPlateWithLetters(letters) {
     return;
   }
 
-  // If platePreview is an img element, just set the src
-  els.platePreview.src = dataUrl;
+  const canvas = document.getElementById('plateCanvas');
+  if (!canvas) {
+    els.plateFallback.hidden = false;
+    els.platePreview.hidden = true;
+    setSummary('Canvas element not found.');
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  };
+  img.src = dataUrl;
+
   els.platePreview.hidden = false;
   els.plateFallback.hidden = true;
   els.currentLetters.textContent = `Current letters: ${letters}`;
