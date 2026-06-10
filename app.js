@@ -1,5 +1,5 @@
 const WORDLIST_FILE = './SpellFinder.txt';
-const PLATE_IMAGE_FILE = './plate.png';
+const PLATE_IMAGE_FILE = './Plate.png';
 
 const CONFIG = {
   plateTextColor: '#14377D',
@@ -420,9 +420,9 @@ async function init() {
 
   if (!state.plateImage) {
     if (!state.wordListLoaded) {
-      setSummary('Place both SpellFinder.txt and plate.png next to these files before publishing to GitHub Pages.');
+      setSummary('Place both SpellFinder.txt and Plate.png next to these files before publishing to GitHub Pages.');
     } else {
-      setSummary('Place plate.png next to these files before publishing to GitHub Pages.');
+      setSummary('Place Plate.png next to these files before publishing to GitHub Pages.');
     }
   }
 
