@@ -3,7 +3,7 @@ const PLATE_IMAGE_FILE = './Plate.png';
 
 const CONFIG = {
   plateTextColor: '#14377D',
-  manualFontSize: 70,
+  manualFontSize: 170,
   manualLetterSpacingPx: -10,
   manualOffsetX: 20,
   manualOffsetY: -20,
