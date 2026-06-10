@@ -4,9 +4,9 @@ const PLATE_IMAGE_FILE = './Plate.png';
 const CONFIG = {
   plateTextColor: '#14377D',
   manualFontSize:80,
-  manualLetterSpacingPx: -10,
+  manualLetterSpacingPx: 100,
   manualOffsetX: 10,
-  manualOffsetY: 80,
+  manualOffsetY: 100,
   fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif',
   previewMaxWidthPx: 560,
 };
