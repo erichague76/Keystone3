@@ -5,11 +5,8 @@ const PLATE_IMAGE_FILE = './Plate.png';
 
 const CONFIG = {
     plateTextColor: '#14377D',
-
-    // FIRST TWO REVERTED VALUES:
-    manualFontSize: 80,              // reverted from 100
-    manualLetterSpacingPx: -10,      // reverted from 80
-
+    manualFontSize: 80,              // reverted
+    manualLetterSpacingPx: -10,      // reverted
     manualOffsetX: 10,
     manualOffsetY: 80,
     fontFamily: '"Arial Narrow", Bahnschrift, Arial, sans-serif'
